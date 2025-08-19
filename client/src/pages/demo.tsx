@@ -253,24 +253,64 @@ export default function Demo() {
           </CardContent>
         </Card>
 
+        {/* Technology Showcase */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          <Card className="border-blue-200 bg-blue-50">
+            <CardContent className="p-4 text-center">
+              <Shield className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-sm mb-1">Blockchain Consent</h3>
+              <p className="text-xs text-gray-600">Ethereum-secured patient permissions with immutable audit trails</p>
+            </CardContent>
+          </Card>
+          <Card className="border-green-200 bg-green-50">
+            <CardContent className="p-4 text-center">
+              <Database className="w-8 h-8 text-green-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-sm mb-1">HL7 FHIR Integration</h3>
+              <p className="text-xs text-gray-600">Real-time sync with hospital EHR systems via FHIR R4 standards</p>
+            </CardContent>
+          </Card>
+          <Card className="border-purple-200 bg-purple-50">
+            <CardContent className="p-4 text-center">
+              <Brain className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-sm mb-1">ML Predictions</h3>
+              <p className="text-xs text-gray-600">Advanced analytics predicting readmissions and resource needs</p>
+            </CardContent>
+          </Card>
+          <Card className="border-orange-200 bg-orange-50">
+            <CardContent className="p-4 text-center">
+              <Users className="w-8 h-8 text-orange-600 mx-auto mb-2" />
+              <h3 className="font-semibold text-sm mb-1">Multi-tenant</h3>
+              <p className="text-xs text-gray-600">Scalable architecture supporting multiple hospitals securely</p>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Solution Tabs */}
         <Tabs value={activeDemo} onValueChange={setActiveDemo} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
             <TabsTrigger value="exploratory" className="flex items-center space-x-2">
               <Search className="w-4 h-4" />
-              <span>Exploratory Analysis</span>
+              <span>Analysis</span>
             </TabsTrigger>
             <TabsTrigger value="querying" className="flex items-center space-x-2">
               <MessageSquare className="w-4 h-4" />
-              <span>NLP Querying</span>
+              <span>NLP Query</span>
             </TabsTrigger>
             <TabsTrigger value="predictive" className="flex items-center space-x-2">
               <Brain className="w-4 h-4" />
-              <span>Predictive Analytics</span>
+              <span>Predictive</span>
             </TabsTrigger>
             <TabsTrigger value="insights" className="flex items-center space-x-2">
               <Target className="w-4 h-4" />
-              <span>Decision Support</span>
+              <span>Decisions</span>
+            </TabsTrigger>
+            <TabsTrigger value="blockchain" className="flex items-center space-x-2">
+              <Shield className="w-4 h-4" />
+              <span>Consent</span>
+            </TabsTrigger>
+            <TabsTrigger value="fhir" className="flex items-center space-x-2">
+              <Database className="w-4 h-4" />
+              <span>FHIR</span>
             </TabsTrigger>
           </TabsList>
 
@@ -524,6 +564,35 @@ export default function Demo() {
                     </div>
                   )}
 
+                  {/* Advanced ML Models */}
+                  <Card className="bg-purple-50 border-purple-200">
+                    <CardHeader>
+                      <CardTitle className="text-base flex items-center space-x-2">
+                        <Brain className="w-5 h-5 text-purple-600" />
+                        <span>ML Model Performance</span>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-purple-600">89.2%</p>
+                          <p className="text-sm text-gray-600">Readmission Accuracy</p>
+                          <p className="text-xs text-gray-500">Random Forest + XGBoost</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-blue-600">94.7%</p>
+                          <p className="text-sm text-gray-600">Resource Prediction</p>
+                          <p className="text-xs text-gray-500">LSTM Neural Network</p>
+                        </div>
+                        <div className="text-center">
+                          <p className="text-2xl font-bold text-green-600">91.3%</p>
+                          <p className="text-sm text-gray-600">LOS Forecasting</p>
+                          <p className="text-xs text-gray-500">Gradient Boosting</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
                   {/* Risk Stratification */}
                   <Card>
                     <CardHeader>
@@ -563,6 +632,245 @@ export default function Demo() {
                             </div>
                           ))}
                         </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Blockchain Consent Tab */}
+          <TabsContent value="blockchain" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Shield className="w-5 h-5 text-blue-600" />
+                  <span>Blockchain Consent Management</span>
+                </CardTitle>
+                <CardDescription>
+                  Ethereum-based patient consent with immutable audit trails and smart contract governance
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Consent Dashboard */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <Card className="border-green-200">
+                      <CardContent className="p-4 text-center">
+                        <CheckCircle2 className="w-8 h-8 text-green-600 mx-auto mb-2" />
+                        <p className="text-2xl font-bold text-green-600">2,847</p>
+                        <p className="text-sm text-gray-600">Active Consents</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-blue-200">
+                      <CardContent className="p-4 text-center">
+                        <Shield className="w-8 h-8 text-blue-600 mx-auto mb-2" />
+                        <p className="text-2xl font-bold text-blue-600">100%</p>
+                        <p className="text-sm text-gray-600">Blockchain Secured</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-purple-200">
+                      <CardContent className="p-4 text-center">
+                        <FileText className="w-8 h-8 text-purple-600 mx-auto mb-2" />
+                        <p className="text-2xl font-bold text-purple-600">12,459</p>
+                        <p className="text-sm text-gray-600">Audit Records</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Recent Consent Activities */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Recent Consent Activities</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {[
+                          { action: "Data Sharing Approved", patient: "Patient ID: GH-2847", timestamp: "2 minutes ago", hash: "0x8d9e...7f3a" },
+                          { action: "Research Consent Updated", patient: "Patient ID: GH-2846", timestamp: "8 minutes ago", hash: "0x3c1f...9b2d" },
+                          { action: "AI Analysis Authorized", patient: "Patient ID: GH-2845", timestamp: "15 minutes ago", hash: "0x7a4e...1c8f" }
+                        ].map((activity, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div>
+                              <p className="font-semibold text-sm">{activity.action}</p>
+                              <p className="text-xs text-gray-600">{activity.patient} • {activity.timestamp}</p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-xs font-mono text-blue-600">{activity.hash}</p>
+                              <Badge variant="outline" className="text-xs">Verified</Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Smart Contract Status */}
+                  <Card className="bg-blue-50 border-blue-200">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold mb-3 flex items-center space-x-2">
+                        <Shield className="w-4 h-4 text-blue-600" />
+                        <span>Smart Contract Status</span>
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-600">Contract Address:</p>
+                          <p className="font-mono text-xs">0x742d35Cc6634C0532925a3b8D8C3d6784d</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Gas Used (24h):</p>
+                          <p className="font-semibold">47,291 wei</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Network:</p>
+                          <p className="font-semibold">Ethereum Mainnet</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Confirmations:</p>
+                          <p className="font-semibold text-green-600">12/12</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* FHIR Integration Tab */}
+          <TabsContent value="fhir" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Database className="w-5 h-5 text-green-600" />
+                  <span>HL7 FHIR Integration</span>
+                </CardTitle>
+                <CardDescription>
+                  Real-time synchronization with hospital EHR systems using FHIR R4 standards
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-6">
+                  {/* Connection Status */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Card className="border-green-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
+                        <p className="text-sm font-semibold">Epic EMR</p>
+                        <p className="text-xs text-gray-600">Connected</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-green-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mx-auto mb-2"></div>
+                        <p className="text-sm font-semibold">Cerner</p>
+                        <p className="text-xs text-gray-600">Connected</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-yellow-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="w-3 h-3 bg-yellow-500 rounded-full mx-auto mb-2"></div>
+                        <p className="text-sm font-semibold">Allscripts</p>
+                        <p className="text-xs text-gray-600">Syncing</p>
+                      </CardContent>
+                    </Card>
+                    <Card className="border-blue-200">
+                      <CardContent className="p-4 text-center">
+                        <div className="w-3 h-3 bg-blue-500 rounded-full mx-auto mb-2"></div>
+                        <p className="text-sm font-semibold">OpenEMR</p>
+                        <p className="text-xs text-gray-600">Ready</p>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Real-time Data Sync */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Real-time Data Synchronization</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="space-y-3">
+                        {[
+                          { resource: "Patient Records", synced: "2,847", total: "2,847", status: "complete" },
+                          { resource: "Observations", synced: "45,293", total: "45,397", status: "syncing" },
+                          { resource: "Medications", synced: "18,472", total: "18,472", status: "complete" },
+                          { resource: "Procedures", synced: "7,821", total: "7,823", status: "syncing" },
+                          { resource: "Lab Results", synced: "92,156", total: "92,156", status: "complete" }
+                        ].map((item, index) => (
+                          <div key={index} className="flex items-center justify-between p-3 border rounded-lg">
+                            <div className="flex items-center space-x-3">
+                              <div className={`w-3 h-3 rounded-full ${item.status === 'complete' ? 'bg-green-500' : 'bg-yellow-500'}`}></div>
+                              <div>
+                                <p className="font-semibold text-sm">{item.resource}</p>
+                                <p className="text-xs text-gray-600">{item.synced} / {item.total} resources</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <Badge variant={item.status === 'complete' ? 'default' : 'secondary'}>
+                                {item.status === 'complete' ? 'Synced' : 'Syncing'}
+                              </Badge>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* FHIR Compliance */}
+                  <Card className="bg-green-50 border-green-200">
+                    <CardContent className="p-4">
+                      <h4 className="font-semibold mb-3 flex items-center space-x-2">
+                        <CheckCircle2 className="w-4 h-4 text-green-600" />
+                        <span>FHIR R4 Compliance Status</span>
+                      </h4>
+                      <div className="grid grid-cols-2 gap-4 text-sm">
+                        <div>
+                          <p className="text-gray-600">Standard Version:</p>
+                          <p className="font-semibold">HL7 FHIR R4 v4.0.1</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Supported Resources:</p>
+                          <p className="font-semibold">127 / 145</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Interoperability Score:</p>
+                          <p className="font-semibold text-green-600">94.2%</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-600">Last Validation:</p>
+                          <p className="font-semibold">2 hours ago</p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Multi-tenant Architecture */}
+                  <Card>
+                    <CardHeader>
+                      <CardTitle className="text-base">Multi-tenant Hospital Network</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                          { hospital: "Korle-Bu Teaching Hospital", patients: "12,847", status: "active", region: "Greater Accra" },
+                          { hospital: "Komfo Anokye Hospital", patients: "8,293", status: "active", region: "Ashanti" },
+                          { hospital: "37 Military Hospital", patients: "4,156", status: "active", region: "Greater Accra" }
+                        ].map((hospital, index) => (
+                          <Card key={index} className="border-l-4 border-l-blue-500">
+                            <CardContent className="p-4">
+                              <h5 className="font-semibold text-sm mb-2">{hospital.hospital}</h5>
+                              <div className="space-y-1 text-xs">
+                                <p><span className="text-gray-600">Patients:</span> {hospital.patients}</p>
+                                <p><span className="text-gray-600">Region:</span> {hospital.region}</p>
+                                <div className="flex items-center space-x-2">
+                                  <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                                  <span className="capitalize">{hospital.status}</span>
+                                </div>
+                              </div>
+                            </CardContent>
+                          </Card>
+                        ))}
                       </div>
                     </CardContent>
                   </Card>
@@ -683,16 +991,37 @@ export default function Demo() {
         {/* Call to Action */}
         <Card className="mt-8 bg-gradient-to-r from-medical-blue-600 to-medical-blue-700 text-white">
           <CardContent className="p-6 text-center">
-            <h2 className="text-2xl font-bold mb-4">Transform Your Hospital Data Today</h2>
+            <h2 className="text-2xl font-bold mb-4">Complete Healthcare AI Solution</h2>
             <p className="text-lg mb-6">
-              See how MEDFLECT AI turns your underutilized data into competitive advantage
+              MEDFLECT AI: Groq-accelerated LLMs + Blockchain Consent + FHIR Integration + ML Predictions
             </p>
-            <div className="flex justify-center space-x-4">
+            
+            {/* Technology Highlights */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6 text-sm">
+              <div className="flex items-center justify-center space-x-2">
+                <Shield className="w-4 h-4" />
+                <span>Ethereum Secured</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Database className="w-4 h-4" />
+                <span>FHIR R4 Compliant</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Brain className="w-4 h-4" />
+                <span>89% ML Accuracy</span>
+              </div>
+              <div className="flex items-center justify-center space-x-2">
+                <Users className="w-4 h-4" />
+                <span>Multi-tenant Ready</span>
+              </div>
+            </div>
+            
+            <div className="flex flex-col sm:flex-row justify-center space-y-2 sm:space-y-0 sm:space-x-4">
               <Button size="lg" variant="secondary">
-                Schedule Demo
+                Contact Sales
               </Button>
               <Button size="lg" variant="outline" className="text-white border-white hover:bg-white hover:text-blue-600">
-                Start Free Trial
+                Deploy in Ghana
               </Button>
             </div>
           </CardContent>
