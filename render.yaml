@@ -5,11 +5,14 @@ services:
     plan: free
     region: oregon
     autoDeploy: true
-    buildCommand: npm install && npm run build
+    buildCommand: npm ci && npm run build
     startCommand: npm run start
     envVars:
       - key: NODE_ENV
         value: production
+      - key: NPM_CONFIG_PRODUCTION
+        # Ensure devDependencies (e.g., vite) are installed during build
+        value: "false"
       - key: FRONTEND_ORIGIN
         # Set this after Vercel deploy to your frontend URL (comma-separated if multiple)
         value: ""
