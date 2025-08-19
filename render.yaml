@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: medflect-backend
+    env: node
+    plan: free
+    region: oregon
+    autoDeploy: true
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        # Render provides PORT automatically; this ensures our app reads it
+        generateValue: false
+      - key: FRONTEND_ORIGIN
+        # Set this after Vercel deploy to your frontend URL (comma-separated if multiple)
+        value: ""
+    healthCheckPath: /api/health
+    routes:
+      - type: healthcheck
+        path: /api/health
