@@ -8,6 +8,7 @@ import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import OfflineIndicator from "@/components/layout/offline-indicator";
 import Landing from "@/pages/landing";
+import Demo from "@/pages/demo";
 import Dashboard from "@/pages/dashboard";
 import AISummaries from "@/pages/ai-summaries";
 import Patients from "@/pages/patients";
@@ -35,6 +36,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Landing} />
+      <Route path="/demo" component={Demo} />
       <Route path="/dashboard" component={() => <AppLayout><Dashboard /></AppLayout>} />
       <Route path="/summaries" component={() => <AppLayout><AISummaries /></AppLayout>} />
       <Route path="/patients" component={() => <AppLayout><Patients /></AppLayout>} />
