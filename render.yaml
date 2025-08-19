@@ -17,6 +17,3 @@ services:
         # Set this after Vercel deploy to your frontend URL (comma-separated if multiple)
         value: ""
     healthCheckPath: /api/health
-    routes:
-      - type: healthcheck
-        path: /api/health
