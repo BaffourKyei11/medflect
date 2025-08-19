@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, timestamp, jsonb, boolean, integer, decimal } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, timestamp, jsonb, boolean, integer, decimal, real } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -77,7 +77,99 @@ export const auditLogs = pgTable("audit_logs", {
   resourceId: text("resource_id"),
   details: jsonb("details"),
   blockchainHash: text("blockchain_hash"),
+  transactionHash: text("transaction_hash"),
+  blockNumber: integer("block_number"),
+  verified: boolean("verified").default(false),
   timestamp: timestamp("timestamp").defaultNow(),
+});
+
+// Blockchain-based consent management
+export const consentRecords = pgTable("consent_records", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  patientId: varchar("patient_id").references(() => patients.id).notNull(),
+  purpose: text("purpose").notNull(),
+  dataTypes: text("data_types").array().notNull(),
+  granularity: text("granularity").notNull(),
+  status: text("status").notNull().default("active"),
+  consentDate: timestamp("consent_date").defaultNow().notNull(),
+  expiryDate: timestamp("expiry_date"),
+  revokedDate: timestamp("revoked_date"),
+  clinicianId: varchar("clinician_id").references(() => users.id).notNull(),
+  hospitalId: varchar("hospital_id").notNull(),
+  consentHash: text("consent_hash").notNull(),
+  transactionHash: text("transaction_hash"),
+  blockNumber: integer("block_number"),
+  blockchainVerified: boolean("blockchain_verified").default(false),
+  metadata: jsonb("metadata"),
+});
+
+// Multi-tenant hospital management
+export const hospitals = pgTable("hospitals", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  code: text("code").notNull().unique(),
+  address: text("address"),
+  city: text("city"),
+  region: text("region"),
+  country: text("country").default("Ghana"),
+  contactEmail: text("contact_email"),
+  contactPhone: text("contact_phone"),
+  fhirEndpoint: text("fhir_endpoint"),
+  fhirApiKey: text("fhir_api_key"),
+  blockchainAddress: text("blockchain_address"),
+  status: text("status").notNull().default("active"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+// FHIR data synchronization tracking
+export const fhirSyncLogs = pgTable("fhir_sync_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  hospitalId: varchar("hospital_id").references(() => hospitals.id).notNull(),
+  resourceType: text("resource_type").notNull(),
+  resourceId: text("resource_id"),
+  syncType: text("sync_type").notNull(),
+  status: text("status").notNull(),
+  errorMessage: text("error_message"),
+  recordsProcessed: integer("records_processed").default(0),
+  lastSyncTime: timestamp("last_sync_time").defaultNow().notNull(),
+  nextSyncTime: timestamp("next_sync_time"),
+  fhirVersion: text("fhir_version").default("R4"),
+});
+
+// Predictive analytics models and results
+export const predictiveModels = pgTable("predictive_models", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  type: text("type").notNull(),
+  version: text("version").notNull(),
+  algorithm: text("algorithm").notNull(),
+  accuracy: real("accuracy"),
+  precision: real("precision"),
+  recall: real("recall"),
+  f1Score: real("f1_score"),
+  trainingDataSize: integer("training_data_size"),
+  lastTrainingDate: timestamp("last_training_date"),
+  status: text("status").notNull().default("active"),
+  hospitalId: varchar("hospital_id").references(() => hospitals.id),
+  metadata: jsonb("metadata"),
+});
+
+export const predictions = pgTable("predictions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  modelId: varchar("model_id").references(() => predictiveModels.id).notNull(),
+  patientId: varchar("patient_id").references(() => patients.id).notNull(),
+  predictionType: text("prediction_type").notNull(),
+  predictedValue: real("predicted_value"),
+  confidence: real("confidence"),
+  features: jsonb("features"),
+  outcome: text("outcome"),
+  predictionDate: timestamp("prediction_date").defaultNow().notNull(),
+  validUntil: timestamp("valid_until"),
+  reviewed: boolean("reviewed").default(false),
+  reviewedBy: varchar("reviewed_by").references(() => users.id),
+  reviewDate: timestamp("review_date"),
+  actionTaken: text("action_taken"),
 });
 
 // Insert schemas
@@ -108,6 +200,26 @@ export const insertAuditLogSchema = createInsertSchema(auditLogs).omit({
   timestamp: true,
 });
 
+export const insertConsentRecordSchema = createInsertSchema(consentRecords).omit({
+  id: true,
+  consentDate: true,
+});
+
+export const insertHospitalSchema = createInsertSchema(hospitals).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertFhirSyncLogSchema = createInsertSchema(fhirSyncLogs).omit({
+  id: true,
+  lastSyncTime: true,
+});
+
+export const insertPredictiveModelSchema = createInsertSchema(predictiveModels);
+
+export const insertPredictionSchema = createInsertSchema(predictions);
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -120,3 +232,13 @@ export type RiskAlert = typeof riskAlerts.$inferSelect;
 export type InsertRiskAlert = z.infer<typeof insertRiskAlertSchema>;
 export type AuditLog = typeof auditLogs.$inferSelect;
 export type InsertAuditLog = z.infer<typeof insertAuditLogSchema>;
+export type ConsentRecord = typeof consentRecords.$inferSelect;
+export type InsertConsentRecord = z.infer<typeof insertConsentRecordSchema>;
+export type Hospital = typeof hospitals.$inferSelect;
+export type InsertHospital = z.infer<typeof insertHospitalSchema>;
+export type FhirSyncLog = typeof fhirSyncLogs.$inferSelect;
+export type InsertFhirSyncLog = z.infer<typeof insertFhirSyncLogSchema>;
+export type PredictiveModel = typeof predictiveModels.$inferSelect;
+export type InsertPredictiveModel = z.infer<typeof insertPredictiveModelSchema>;
+export type Prediction = typeof predictions.$inferSelect;
+export type InsertPrediction = z.infer<typeof insertPredictionSchema>;

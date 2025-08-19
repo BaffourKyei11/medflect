@@ -9,7 +9,13 @@ import {
   type RiskAlert,
   type InsertRiskAlert,
   type AuditLog,
-  type InsertAuditLog
+  type InsertAuditLog,
+  type ConsentRecord,
+  type InsertConsentRecord,
+  type Hospital,
+  type InsertHospital,
+  type Prediction,
+  type InsertPrediction
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -45,6 +51,24 @@ export interface IStorage {
   // Audit Logs
   getAuditLogs(limit?: number): Promise<AuditLog[]>;
   createAuditLog(log: InsertAuditLog): Promise<AuditLog>;
+  
+  // Consent Records
+  getConsentRecord(id: string): Promise<ConsentRecord | undefined>;
+  getConsentRecordsByPatient(patientId: string): Promise<ConsentRecord[]>;
+  createConsentRecord(consent: InsertConsentRecord): Promise<ConsentRecord>;
+  updateConsentRecord(id: string, updates: Partial<ConsentRecord>): Promise<ConsentRecord | undefined>;
+  
+  // Hospitals
+  getHospital(id: string): Promise<Hospital | undefined>;
+  getHospitals(): Promise<Hospital[]>;
+  createHospital(hospital: InsertHospital): Promise<Hospital>;
+  updateHospital(id: string, updates: Partial<Hospital>): Promise<Hospital | undefined>;
+  
+  // Predictions
+  getPrediction(id: string): Promise<Prediction | undefined>;
+  getPredictionsByPatient(patientId: string): Promise<Prediction[]>;
+  createPrediction(prediction: InsertPrediction): Promise<Prediction>;
+  updatePrediction(id: string, updates: Partial<Prediction>): Promise<Prediction | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -54,6 +78,9 @@ export class MemStorage implements IStorage {
   private hospitalMetrics: Map<string, HospitalMetrics> = new Map();
   private riskAlerts: Map<string, RiskAlert> = new Map();
   private auditLogs: Map<string, AuditLog> = new Map();
+  private consentRecords: Map<string, ConsentRecord> = new Map();
+  private hospitals: Map<string, Hospital> = new Map();
+  private predictions: Map<string, Prediction> = new Map();
 
   constructor() {
     this.initializeSampleData();
@@ -310,6 +337,98 @@ export class MemStorage implements IStorage {
     };
     this.auditLogs.set(log.id, log);
     return log;
+  }
+
+  // Consent Record methods
+  async getConsentRecord(id: string): Promise<ConsentRecord | undefined> {
+    return this.consentRecords.get(id);
+  }
+
+  async getConsentRecordsByPatient(patientId: string): Promise<ConsentRecord[]> {
+    return Array.from(this.consentRecords.values()).filter(
+      consent => consent.patientId === patientId
+    );
+  }
+
+  async createConsentRecord(insertConsent: InsertConsentRecord): Promise<ConsentRecord> {
+    const consent: ConsentRecord = {
+      ...insertConsent,
+      id: randomUUID(),
+      consentDate: new Date(),
+    };
+    this.consentRecords.set(consent.id, consent);
+    return consent;
+  }
+
+  async updateConsentRecord(id: string, updates: Partial<ConsentRecord>): Promise<ConsentRecord | undefined> {
+    const consent = this.consentRecords.get(id);
+    if (consent) {
+      const updated = { ...consent, ...updates };
+      this.consentRecords.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  // Hospital methods
+  async getHospital(id: string): Promise<Hospital | undefined> {
+    return this.hospitals.get(id);
+  }
+
+  async getHospitals(): Promise<Hospital[]> {
+    return Array.from(this.hospitals.values());
+  }
+
+  async createHospital(insertHospital: InsertHospital): Promise<Hospital> {
+    const hospital: Hospital = {
+      ...insertHospital,
+      id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.hospitals.set(hospital.id, hospital);
+    return hospital;
+  }
+
+  async updateHospital(id: string, updates: Partial<Hospital>): Promise<Hospital | undefined> {
+    const hospital = this.hospitals.get(id);
+    if (hospital) {
+      const updated = { ...hospital, ...updates, updatedAt: new Date() };
+      this.hospitals.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  // Prediction methods
+  async getPrediction(id: string): Promise<Prediction | undefined> {
+    return this.predictions.get(id);
+  }
+
+  async getPredictionsByPatient(patientId: string): Promise<Prediction[]> {
+    return Array.from(this.predictions.values()).filter(
+      prediction => prediction.patientId === patientId
+    );
+  }
+
+  async createPrediction(insertPrediction: InsertPrediction): Promise<Prediction> {
+    const prediction: Prediction = {
+      ...insertPrediction,
+      id: randomUUID(),
+      predictionDate: new Date(),
+    };
+    this.predictions.set(prediction.id, prediction);
+    return prediction;
+  }
+
+  async updatePrediction(id: string, updates: Partial<Prediction>): Promise<Prediction | undefined> {
+    const prediction = this.predictions.get(id);
+    if (prediction) {
+      const updated = { ...prediction, ...updates };
+      this.predictions.set(id, updated);
+      return updated;
+    }
+    return undefined;
   }
 }
 

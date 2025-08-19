@@ -4,7 +4,13 @@ import { z } from "zod";
 import { storage } from "./storage";
 import { groqService } from "./services/groq";
 import { fhirService } from "./services/fhir";
-import { insertClinicalSummarySchema, insertAuditLogSchema } from "@shared/schema";
+import { blockchainService } from "./services/blockchain";
+import { createEnhancedFHIRService } from "./services/enhanced-fhir";
+import { createPredictiveAnalyticsService } from "./services/predictive-analytics";
+import { insertClinicalSummarySchema, insertAuditLogSchema, insertConsentRecordSchema, insertHospitalSchema, insertPredictionSchema } from "@shared/schema";
+
+const enhancedFhirService = createEnhancedFHIRService();
+const predictiveService = createPredictiveAnalyticsService();
 
 // Request validation schemas
 const generateSummarySchema = z.object({
@@ -285,12 +291,205 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Blockchain Consent Management Routes
+  app.post("/api/consent/record", async (req, res) => {
+    try {
+      const consentData = insertConsentRecordSchema.parse(req.body);
+      
+      // Record consent on blockchain
+      const blockchainEntry = await blockchainService.recordConsent({
+        patientId: consentData.patientId,
+        purpose: consentData.purpose,
+        dataTypes: consentData.dataTypes,
+        timestamp: new Date(),
+        granularity: consentData.granularity,
+        clinicianId: consentData.clinicianId,
+        hospitalId: consentData.hospitalId
+      });
+
+      // Store in database with blockchain reference
+      const consent = await storage.createConsentRecord({
+        ...consentData,
+        consentHash: blockchainEntry.consentHash,
+        transactionHash: blockchainEntry.transactionHash,
+        blockNumber: blockchainEntry.blockNumber,
+        blockchainVerified: blockchainEntry.verified
+      });
+
+      res.json({ consent, blockchain: blockchainEntry });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to record consent", error: error instanceof Error ? error.message : "Unknown error" });
+    }
+  });
+
+  app.get("/api/consent/verify/:patientId", async (req, res) => {
+    try {
+      const verified = await blockchainService.verifyConsent(req.params.patientId);
+      res.json({ verified, timestamp: new Date() });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to verify consent" });
+    }
+  });
+
+  app.get("/api/blockchain/status", async (req, res) => {
+    try {
+      const status = await blockchainService.getBlockchainStatus();
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get blockchain status" });
+    }
+  });
+
+  // Enhanced FHIR Routes
+  app.post("/api/fhir/configure", async (req, res) => {
+    try {
+      const config = req.body;
+      await enhancedFhirService.configureHospital(config);
+      res.json({ message: "Hospital FHIR configuration successful" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to configure FHIR", error: error instanceof Error ? error.message : "Unknown error" });
+    }
+  });
+
+  app.post("/api/fhir/test-connection", async (req, res) => {
+    try {
+      const { endpoint, apiKey } = req.body;
+      const result = await enhancedFhirService.testConnection(endpoint, apiKey);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to test FHIR connection" });
+    }
+  });
+
+  app.post("/api/fhir/sync/:hospitalId", async (req, res) => {
+    try {
+      const { hospitalId } = req.params;
+      const options = req.body;
+      const result = await enhancedFhirService.bulkPatientSync(hospitalId, options);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to sync FHIR data" });
+    }
+  });
+
+  app.get("/api/fhir/sync-status/:hospitalId", async (req, res) => {
+    try {
+      const status = await enhancedFhirService.getSyncStatus(req.params.hospitalId);
+      res.json(status);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get sync status" });
+    }
+  });
+
+  // Predictive Analytics Routes
+  app.post("/api/analytics/predict/readmission", async (req, res) => {
+    try {
+      const { patientId, admissionData } = req.body;
+      const prediction = await predictiveService.predictReadmissionRisk(patientId, admissionData);
+      
+      // Store prediction in database
+      await storage.createPrediction({
+        modelId: "readmission-v2.1",
+        patientId,
+        predictionType: "readmission",
+        predictedValue: prediction.riskScore,
+        confidence: prediction.confidence,
+        features: admissionData,
+        validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 days
+      });
+
+      res.json(prediction);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to predict readmission risk" });
+    }
+  });
+
+  app.post("/api/analytics/predict/resources", async (req, res) => {
+    try {
+      const { hospitalId, timeframe } = req.body;
+      const prediction = await predictiveService.predictResourceNeeds(hospitalId, timeframe);
+      res.json(prediction);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to predict resource needs" });
+    }
+  });
+
+  app.get("/api/analytics/risk-stratification/:patientId", async (req, res) => {
+    try {
+      const stratification = await predictiveService.stratifyPatientRisk(req.params.patientId);
+      res.json(stratification);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to stratify patient risk" });
+    }
+  });
+
+  app.post("/api/analytics/train-model", async (req, res) => {
+    try {
+      const { modelType, trainingData } = req.body;
+      const result = await predictiveService.trainModel(modelType, trainingData);
+      res.json(result);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to train model" });
+    }
+  });
+
+  app.get("/api/analytics/insights/:hospitalId", async (req, res) => {
+    try {
+      const { hospitalId } = req.params;
+      const { startDate, endDate, granularity } = req.query;
+      
+      const period = {
+        startDate: new Date(startDate as string),
+        endDate: new Date(endDate as string),
+        granularity: granularity as 'daily' | 'weekly' | 'monthly'
+      };
+      
+      const insights = await predictiveService.getHospitalInsights(hospitalId, period);
+      res.json(insights);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get hospital insights" });
+    }
+  });
+
+  // Multi-tenant Hospital Management Routes
+  app.post("/api/hospitals", async (req, res) => {
+    try {
+      const hospitalData = insertHospitalSchema.parse(req.body);
+      const hospital = await storage.createHospital(hospitalData);
+      res.json(hospital);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create hospital" });
+    }
+  });
+
+  app.get("/api/hospitals", async (req, res) => {
+    try {
+      const hospitals = await storage.getHospitals();
+      res.json(hospitals);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch hospitals" });
+    }
+  });
+
+  app.get("/api/hospitals/:id", async (req, res) => {
+    try {
+      const hospital = await storage.getHospital(req.params.id);
+      if (!hospital) {
+        return res.status(404).json({ message: "Hospital not found" });
+      }
+      res.json(hospital);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch hospital" });
+    }
+  });
+
   // Health check
   app.get("/api/health", (req, res) => {
     res.json({ 
       status: "ok",
       timestamp: new Date().toISOString(),
-      version: "1.0.0"
+      version: "2.0.0",
+      features: ["ai", "fhir", "blockchain", "predictive-analytics", "multi-tenant"]
     });
   });
 

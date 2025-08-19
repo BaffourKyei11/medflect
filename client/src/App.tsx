@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import Header from "@/components/layout/header";
 import Sidebar from "@/components/layout/sidebar";
 import OfflineIndicator from "@/components/layout/offline-indicator";
+import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
 import AISummaries from "@/pages/ai-summaries";
 import Patients from "@/pages/patients";
@@ -33,7 +34,7 @@ function AppLayout({ children }: { children: React.ReactNode }) {
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={() => <AppLayout><Dashboard /></AppLayout>} />
+      <Route path="/" component={Landing} />
       <Route path="/dashboard" component={() => <AppLayout><Dashboard /></AppLayout>} />
       <Route path="/summaries" component={() => <AppLayout><AISummaries /></AppLayout>} />
       <Route path="/patients" component={() => <AppLayout><Patients /></AppLayout>} />
