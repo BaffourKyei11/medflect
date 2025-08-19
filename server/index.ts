@@ -1,8 +1,20 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 
+// Deployment trigger: touching server to force Render rebuild (2025-08-19)
 const app = express();
+// Allow frontend (Vercel) to call the API on Render
+const allowedOrigins = process.env.FRONTEND_ORIGIN
+  ? process.env.FRONTEND_ORIGIN.split(",").map((s) => s.trim()).filter(Boolean)
+  : undefined; // undefined => reflect request origin, or set to '*' via options below
+app.use(
+  cors({
+    origin: allowedOrigins ?? true,
+    credentials: true,
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -61,11 +73,16 @@ app.use((req, res, next) => {
   // this serves both the API and the client.
   // It is the only port that is not firewalled.
   const port = parseInt(process.env.PORT || '5000', 10);
-  server.listen({
+  const listenOpts: any = {
     port,
     host: "0.0.0.0",
-    reusePort: true,
-  }, () => {
+  };
+  // reusePort can cause ENOTSUP on Windows. Only enable when explicitly requested
+  // and not on Windows platforms.
+  if (process.platform !== "win32" && process.env.REUSE_PORT === "1") {
+    listenOpts.reusePort = true;
+  }
+  server.listen(listenOpts, () => {
     log(`serving on port ${port}`);
   });
 })();
