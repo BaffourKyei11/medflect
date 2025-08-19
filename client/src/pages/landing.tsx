@@ -107,25 +107,27 @@ export default function Landing() {
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/dashboard">
+              <Link href="/demo">
                 <Button 
                   size="lg" 
                   className="bg-white text-medical-blue-600 hover:bg-medical-blue-50 font-semibold px-8 py-3"
+                  data-testid="cta-demo"
+                >
+                  Live Demo
+                  <Zap className="ml-2 w-5 h-5" />
+                </Button>
+              </Link>
+              <Link href="/dashboard">
+                <Button 
+                  variant="outline" 
+                  size="lg" 
+                  className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3"
                   data-testid="cta-dashboard"
                 >
                   Launch Dashboard
                   <ArrowRight className="ml-2 w-5 h-5" />
                 </Button>
               </Link>
-              <Button 
-                variant="outline" 
-                size="lg" 
-                className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-3"
-                data-testid="cta-demo"
-              >
-                Watch Demo
-                <Zap className="ml-2 w-5 h-5" />
-              </Button>
             </div>
           </div>
         </div>
@@ -407,25 +409,27 @@ export default function Landing() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/dashboard">
+            <Link href="/demo">
               <Button 
                 size="lg" 
                 className="bg-white text-medical-blue-600 hover:bg-medical-blue-50 font-semibold px-8 py-4"
+                data-testid="cta-bottom-demo"
+              >
+                See Live Demo
+                <Zap className="ml-2 w-5 h-5" />
+              </Button>
+            </Link>
+            <Link href="/dashboard">
+              <Button 
+                variant="outline" 
+                size="lg" 
+                className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-4"
                 data-testid="cta-bottom-dashboard"
               >
                 Get Started Today
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
             </Link>
-            <Button 
-              variant="outline" 
-              size="lg" 
-              className="border-white/30 text-white hover:bg-white/10 font-semibold px-8 py-4"
-              data-testid="cta-bottom-contact"
-            >
-              Schedule Demo
-              <Calendar className="ml-2 w-5 h-5" />
-            </Button>
           </div>
 
           <div className="mt-12 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
