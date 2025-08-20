@@ -199,7 +199,7 @@ export function useWorkflowCache() {
         } catch (syncError) {
           // Mark as conflict for manual resolution
           entry.syncStatus = 'conflict';
-          await workflowCache.saveWorkflow(entry.workflow, 'conflict');
+          await workflowCache.saveWorkflow(entry.workflow, 'pending');
         }
       }
     } catch (err) {

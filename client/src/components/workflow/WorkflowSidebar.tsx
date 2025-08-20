@@ -16,7 +16,7 @@ export function WorkflowSidebar({ onAddNode, isReadOnly = false }: WorkflowSideb
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // Group blocks by category
-  const categories = [...new Set(WORKFLOW_BLOCKS.map(block => block.category))];
+  const categories = Array.from(new Set(WORKFLOW_BLOCKS.map(block => block.category)));
   
   const filteredBlocks = WORKFLOW_BLOCKS.filter(block => {
     const matchesSearch = block.label.toLowerCase().includes(searchTerm.toLowerCase()) ||
