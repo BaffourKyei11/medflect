@@ -16,6 +16,7 @@ import Analytics from "@/pages/analytics";
 import ConsentManagement from "@/pages/consent-management";
 import AuditLogs from "@/pages/audit-logs";
 import NotFound from "@/pages/not-found";
+import WorkflowBuilder from "@/pages/workflow-builder";
 
 function AppLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -43,6 +44,8 @@ function Router() {
       <Route path="/analytics" component={() => <AppLayout><Analytics /></AppLayout>} />
       <Route path="/consent" component={() => <AppLayout><ConsentManagement /></AppLayout>} />
       <Route path="/audit" component={() => <AppLayout><AuditLogs /></AppLayout>} />
+      <Route path="/workflow-builder" component={() => <AppLayout><WorkflowBuilder /></AppLayout>} />
+      <Route path="/workflow" component={() => <AppLayout><WorkflowBuilder /></AppLayout>} />
       <Route component={NotFound} />
     </Switch>
   );

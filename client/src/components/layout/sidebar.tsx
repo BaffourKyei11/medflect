@@ -42,7 +42,7 @@ const navigation = [
   },
   {
     name: "Workflow Builder",
-    href: "/workflow",
+    href: "/workflow-builder",
     icon: Workflow,
     section: "Administration"
   },
