@@ -201,6 +201,8 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const user: User = {
       ...insertUser,
+      role: insertUser.role || "clinician",
+      department: insertUser.department || null,
       id: randomUUID(),
       createdAt: new Date(),
     };
@@ -224,6 +226,10 @@ export class MemStorage implements IStorage {
   async createPatient(insertPatient: InsertPatient): Promise<Patient> {
     const patient: Patient = {
       ...insertPatient,
+      dateOfBirth: insertPatient.dateOfBirth || null,
+      gender: insertPatient.gender || null,
+      contactInfo: insertPatient.contactInfo || null,
+      fhirId: insertPatient.fhirId || null,
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -256,6 +262,13 @@ export class MemStorage implements IStorage {
   async createClinicalSummary(insertSummary: InsertClinicalSummary): Promise<ClinicalSummary> {
     const summary: ClinicalSummary = {
       ...insertSummary,
+      status: insertSummary.status || null,
+      patientId: insertSummary.patientId || null,
+      userId: insertSummary.userId || null,
+      aiGenerated: insertSummary.aiGenerated || null,
+      groqModel: insertSummary.groqModel || null,
+      generationTime: insertSummary.generationTime || null,
+      fhirResourceId: insertSummary.fhirResourceId || null,
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -306,6 +319,9 @@ export class MemStorage implements IStorage {
   async createRiskAlert(insertAlert: InsertRiskAlert): Promise<RiskAlert> {
     const alert: RiskAlert = {
       ...insertAlert,
+      patientId: insertAlert.patientId || null,
+      riskScore: insertAlert.riskScore || null,
+      resolved: insertAlert.resolved || null,
       id: randomUUID(),
       createdAt: new Date(),
     };
@@ -332,6 +348,13 @@ export class MemStorage implements IStorage {
   async createAuditLog(insertLog: InsertAuditLog): Promise<AuditLog> {
     const log: AuditLog = {
       ...insertLog,
+      userId: insertLog.userId || null,
+      resourceId: insertLog.resourceId || null,
+      details: insertLog.details || null,
+      blockchainHash: insertLog.blockchainHash || null,
+      transactionHash: insertLog.transactionHash || null,
+      blockNumber: insertLog.blockNumber || null,
+      verified: insertLog.verified || null,
       id: randomUUID(),
       timestamp: new Date(),
     };
@@ -353,6 +376,13 @@ export class MemStorage implements IStorage {
   async createConsentRecord(insertConsent: InsertConsentRecord): Promise<ConsentRecord> {
     const consent: ConsentRecord = {
       ...insertConsent,
+      status: insertConsent.status || "active",
+      expiryDate: insertConsent.expiryDate || null,
+      revokedDate: insertConsent.revokedDate || null,
+      transactionHash: insertConsent.transactionHash || null,
+      blockNumber: insertConsent.blockNumber || null,
+      blockchainVerified: insertConsent.blockchainVerified || null,
+      metadata: insertConsent.metadata || null,
       id: randomUUID(),
       consentDate: new Date(),
     };
@@ -382,6 +412,16 @@ export class MemStorage implements IStorage {
   async createHospital(insertHospital: InsertHospital): Promise<Hospital> {
     const hospital: Hospital = {
       ...insertHospital,
+      status: insertHospital.status || "active",
+      address: insertHospital.address || null,
+      city: insertHospital.city || null,
+      region: insertHospital.region || null,
+      country: insertHospital.country || null,
+      contactEmail: insertHospital.contactEmail || null,
+      contactPhone: insertHospital.contactPhone || null,
+      fhirEndpoint: insertHospital.fhirEndpoint || null,
+      fhirApiKey: insertHospital.fhirApiKey || null,
+      blockchainAddress: insertHospital.blockchainAddress || null,
       id: randomUUID(),
       createdAt: new Date(),
       updatedAt: new Date(),
