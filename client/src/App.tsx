@@ -44,8 +44,8 @@ function Router() {
       <Route path="/analytics" component={() => <AppLayout><Analytics /></AppLayout>} />
       <Route path="/consent" component={() => <AppLayout><ConsentManagement /></AppLayout>} />
       <Route path="/audit" component={() => <AppLayout><AuditLogs /></AppLayout>} />
-      <Route path="/workflow-builder" component={() => <AppLayout><WorkflowBuilder /></AppLayout>} />
-      <Route path="/workflow" component={() => <AppLayout><WorkflowBuilder /></AppLayout>} />
+      <Route path="/workflow-builder/:id?" component={() => <AppLayout><WorkflowBuilder /></AppLayout>} />
+      <Route path="/workflows" component={() => <AppLayout><WorkflowBuilder /></AppLayout>} />
       <Route component={NotFound} />
     </Switch>
   );

@@ -26,7 +26,8 @@ import {
   Zap,
   Users,
   Clock,
-  CheckCircle
+  CheckCircle,
+  X
 } from 'lucide-react';
 
 export function WorkflowBuilder() {
@@ -161,12 +162,13 @@ export function WorkflowBuilder() {
   useEffect(() => {
     if (workflowData) {
       setWorkflow(workflowData);
-      setNodes(workflowData.definition.nodes || []);
-      setEdges(workflowData.definition.edges || []);
+      setNodes(workflowData.definition.nodes as WorkflowNode[] || []);
+      setEdges(workflowData.definition.edges as WorkflowEdge[] || []);
       setIsReadOnly(workflowData.status === 'active');
     } else if (isNewWorkflow) {
       // Initialize new workflow
       const newWorkflow: Partial<Workflow> = {
+        id: 'temp-id',
         name: 'New Workflow',
         description: null,
         hospitalId: 'demo-hospital',
@@ -177,6 +179,8 @@ export function WorkflowBuilder() {
         permissions: null,
         metrics: null,
         aiSuggestions: null,
+        createdAt: new Date(),
+        updatedAt: new Date(),
       };
       setWorkflow(newWorkflow as Workflow);
       setNodes([]);
@@ -236,7 +240,7 @@ export function WorkflowBuilder() {
 
     if (isNewWorkflow) {
       const { id, createdAt, updatedAt, ...insertData } = workflowToSave;
-      saveWorkflowMutation.mutate(insertData);
+      saveWorkflowMutation.mutate(insertData as InsertWorkflow);
     } else {
       saveWorkflowMutation.mutate(workflowToSave);
     }

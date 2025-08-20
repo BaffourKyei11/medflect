@@ -23,7 +23,10 @@ import {
   ArrowRight,
   Play,
   Pause,
-  RotateCcw
+  RotateCcw,
+  GitBranch,
+  Settings,
+  Workflow
 } from "lucide-react";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, PieChart, Pie, Cell } from "recharts";
 
@@ -287,7 +290,7 @@ export default function Demo() {
 
         {/* Solution Tabs */}
         <Tabs value={activeDemo} onValueChange={setActiveDemo} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6">
+          <TabsList className="grid w-full grid-cols-7">
             <TabsTrigger value="exploratory" className="flex items-center space-x-2">
               <Search className="w-4 h-4" />
               <span>Analysis</span>
@@ -303,6 +306,10 @@ export default function Demo() {
             <TabsTrigger value="insights" className="flex items-center space-x-2">
               <Target className="w-4 h-4" />
               <span>Decisions</span>
+            </TabsTrigger>
+            <TabsTrigger value="workflow" className="flex items-center space-x-2">
+              <Workflow className="w-4 h-4" />
+              <span>Workflows</span>
             </TabsTrigger>
             <TabsTrigger value="blockchain" className="flex items-center space-x-2">
               <Shield className="w-4 h-4" />

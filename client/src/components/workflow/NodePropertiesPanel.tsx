@@ -249,7 +249,7 @@ export function NodePropertiesPanel({
                         const factors = config.riskFactors || [];
                         const updated = checked 
                           ? [...factors, factor]
-                          : factors.filter(f => f !== factor);
+                          : factors.filter((f: string) => f !== factor);
                         updateNodeData({ config: { ...config, riskFactors: updated } });
                       }}
                       disabled={isReadOnly}
