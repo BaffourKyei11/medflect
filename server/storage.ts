@@ -15,7 +15,11 @@ import {
   type Hospital,
   type InsertHospital,
   type Prediction,
-  type InsertPrediction
+  type InsertPrediction,
+  type Workflow,
+  type InsertWorkflow,
+  type WorkflowExecution,
+  type InsertWorkflowExecution
 } from "@shared/schema";
 import { randomUUID } from "crypto";
 
@@ -69,6 +73,20 @@ export interface IStorage {
   getPredictionsByPatient(patientId: string): Promise<Prediction[]>;
   createPrediction(prediction: InsertPrediction): Promise<Prediction>;
   updatePrediction(id: string, updates: Partial<Prediction>): Promise<Prediction | undefined>;
+  
+  // Workflows
+  getWorkflow(id: string): Promise<Workflow | undefined>;
+  getWorkflowsByHospital(hospitalId: string): Promise<Workflow[]>;
+  getAllWorkflows(): Promise<Workflow[]>;
+  createWorkflow(workflow: InsertWorkflow): Promise<Workflow>;
+  updateWorkflow(id: string, updates: Partial<Workflow>): Promise<Workflow | undefined>;
+  deleteWorkflow(id: string): Promise<boolean>;
+  
+  // Workflow Executions
+  getWorkflowExecution(id: string): Promise<WorkflowExecution | undefined>;
+  getWorkflowExecutionsByWorkflow(workflowId: string): Promise<WorkflowExecution[]>;
+  createWorkflowExecution(execution: InsertWorkflowExecution): Promise<WorkflowExecution>;
+  updateWorkflowExecution(id: string, updates: Partial<WorkflowExecution>): Promise<WorkflowExecution | undefined>;
 }
 
 export class MemStorage implements IStorage {
@@ -81,6 +99,8 @@ export class MemStorage implements IStorage {
   private consentRecords: Map<string, ConsentRecord> = new Map();
   private hospitals: Map<string, Hospital> = new Map();
   private predictions: Map<string, Prediction> = new Map();
+  private workflows: Map<string, Workflow> = new Map();
+  private workflowExecutions: Map<string, WorkflowExecution> = new Map();
 
   constructor() {
     this.initializeSampleData();
@@ -228,7 +248,11 @@ export class MemStorage implements IStorage {
       ...insertPatient,
       dateOfBirth: insertPatient.dateOfBirth || null,
       gender: insertPatient.gender || null,
-      contactInfo: insertPatient.contactInfo || null,
+      contactInfo: insertPatient.contactInfo ? {
+        phone: typeof insertPatient.contactInfo.phone === 'string' ? insertPatient.contactInfo.phone : undefined,
+        email: typeof insertPatient.contactInfo.email === 'string' ? insertPatient.contactInfo.email : undefined,
+        address: typeof insertPatient.contactInfo.address === 'string' ? insertPatient.contactInfo.address : undefined
+      } : null,
       fhirId: insertPatient.fhirId || null,
       id: randomUUID(),
       createdAt: new Date(),
@@ -454,6 +478,15 @@ export class MemStorage implements IStorage {
   async createPrediction(insertPrediction: InsertPrediction): Promise<Prediction> {
     const prediction: Prediction = {
       ...insertPrediction,
+      predictedValue: insertPrediction.predictedValue || null,
+      confidence: insertPrediction.confidence || null,
+      features: insertPrediction.features || null,
+      outcome: insertPrediction.outcome || null,
+      validUntil: insertPrediction.validUntil || null,
+      reviewed: insertPrediction.reviewed || null,
+      reviewedBy: insertPrediction.reviewedBy || null,
+      reviewDate: insertPrediction.reviewDate || null,
+      actionTaken: insertPrediction.actionTaken || null,
       id: randomUUID(),
       predictionDate: new Date(),
     };
@@ -466,6 +499,104 @@ export class MemStorage implements IStorage {
     if (prediction) {
       const updated = { ...prediction, ...updates };
       this.predictions.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  // Workflow methods
+  async getWorkflow(id: string): Promise<Workflow | undefined> {
+    return this.workflows.get(id);
+  }
+
+  async getWorkflowsByHospital(hospitalId: string): Promise<Workflow[]> {
+    return Array.from(this.workflows.values()).filter(
+      workflow => workflow.hospitalId === hospitalId
+    );
+  }
+
+  async getAllWorkflows(): Promise<Workflow[]> {
+    return Array.from(this.workflows.values());
+  }
+
+  async createWorkflow(insertWorkflow: InsertWorkflow): Promise<Workflow> {
+    const workflow: Workflow = {
+      ...insertWorkflow,
+      description: insertWorkflow.description || null,
+      status: insertWorkflow.status || "draft",
+      version: insertWorkflow.version || "1.0",
+      permissions: insertWorkflow.permissions ? {
+        admins: Array.isArray(insertWorkflow.permissions.admins) ? insertWorkflow.permissions.admins as string[] : [],
+        clinicians: Array.isArray(insertWorkflow.permissions.clinicians) ? insertWorkflow.permissions.clinicians as string[] : [],
+        patients: Array.isArray(insertWorkflow.permissions.patients) ? insertWorkflow.permissions.patients as string[] : []
+      } : null,
+      metrics: insertWorkflow.metrics ? {
+        executionCount: insertWorkflow.metrics.executionCount || 0,
+        averageTime: insertWorkflow.metrics.averageTime || 0,
+        successRate: insertWorkflow.metrics.successRate || 0,
+        lastExecuted: typeof insertWorkflow.metrics.lastExecuted === 'string' ? insertWorkflow.metrics.lastExecuted : undefined
+      } : null,
+      aiSuggestions: insertWorkflow.aiSuggestions ? {
+        optimizations: Array.isArray(insertWorkflow.aiSuggestions.optimizations) ? insertWorkflow.aiSuggestions.optimizations as string[] : [],
+        nextSteps: Array.isArray(insertWorkflow.aiSuggestions.nextSteps) ? insertWorkflow.aiSuggestions.nextSteps as string[] : [],
+        summary: insertWorkflow.aiSuggestions.summary || "",
+        generatedAt: insertWorkflow.aiSuggestions.generatedAt || new Date().toISOString()
+      } : null,
+      id: randomUUID(),
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    this.workflows.set(workflow.id, workflow);
+    return workflow;
+  }
+
+  async updateWorkflow(id: string, updates: Partial<Workflow>): Promise<Workflow | undefined> {
+    const workflow = this.workflows.get(id);
+    if (workflow) {
+      const updated = { ...workflow, ...updates, updatedAt: new Date() };
+      this.workflows.set(id, updated);
+      return updated;
+    }
+    return undefined;
+  }
+
+  async deleteWorkflow(id: string): Promise<boolean> {
+    return this.workflows.delete(id);
+  }
+
+  // Workflow Execution methods
+  async getWorkflowExecution(id: string): Promise<WorkflowExecution | undefined> {
+    return this.workflowExecutions.get(id);
+  }
+
+  async getWorkflowExecutionsByWorkflow(workflowId: string): Promise<WorkflowExecution[]> {
+    return Array.from(this.workflowExecutions.values()).filter(
+      execution => execution.workflowId === workflowId
+    );
+  }
+
+  async createWorkflowExecution(insertExecution: InsertWorkflowExecution): Promise<WorkflowExecution> {
+    const execution: WorkflowExecution = {
+      ...insertExecution,
+      patientId: insertExecution.patientId || null,
+      status: insertExecution.status || "running",
+      currentStep: insertExecution.currentStep || null,
+      executionData: insertExecution.executionData || null,
+      completedAt: insertExecution.completedAt || null,
+      duration: insertExecution.duration || null,
+      errorMessage: insertExecution.errorMessage || null,
+      id: randomUUID(),
+      startedAt: new Date(),
+    };
+    this.workflowExecutions.set(execution.id, execution);
+    return execution;
+  }
+
+  async updateWorkflowExecution(id: string, updates: Partial<WorkflowExecution>): Promise<WorkflowExecution | undefined> {
+    const execution = this.workflowExecutions.get(id);
+    if (execution) {
+      const updated = { ...execution, ...updates };
+      this.workflowExecutions.set(id, updated);
       return updated;
     }
     return undefined;
