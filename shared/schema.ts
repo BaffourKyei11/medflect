@@ -172,6 +172,65 @@ export const predictions = pgTable("predictions", {
   actionTaken: text("action_taken"),
 });
 
+// Workflow Builder Schema
+export const workflows = pgTable("workflows", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description"),
+  hospitalId: varchar("hospital_id").references(() => hospitals.id).notNull(),
+  createdBy: varchar("created_by").references(() => users.id).notNull(),
+  status: text("status").notNull().default("draft"), // draft, active, archived
+  version: text("version").notNull().default("1.0"),
+  definition: jsonb("definition").$type<{
+    nodes: Array<{
+      id: string;
+      type: string;
+      position: { x: number; y: number };
+      data: Record<string, any>;
+    }>;
+    edges: Array<{
+      id: string;
+      source: string;
+      target: string;
+      type?: string;
+      data?: Record<string, any>;
+    }>;
+  }>().notNull(),
+  permissions: jsonb("permissions").$type<{
+    admins: string[];
+    clinicians: string[];
+    patients: string[];
+  }>(),
+  metrics: jsonb("metrics").$type<{
+    executionCount: number;
+    averageTime: number;
+    successRate: number;
+    lastExecuted?: string;
+  }>(),
+  aiSuggestions: jsonb("ai_suggestions").$type<{
+    optimizations: string[];
+    nextSteps: string[];
+    summary: string;
+    generatedAt: string;
+  }>(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+  updatedAt: timestamp("updated_at").defaultNow().notNull(),
+});
+
+export const workflowExecutions = pgTable("workflow_executions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  workflowId: varchar("workflow_id").references(() => workflows.id).notNull(),
+  patientId: varchar("patient_id").references(() => patients.id),
+  triggeredBy: varchar("triggered_by").references(() => users.id).notNull(),
+  status: text("status").notNull().default("running"), // running, completed, failed
+  currentStep: text("current_step"),
+  executionData: jsonb("execution_data"),
+  startedAt: timestamp("started_at").defaultNow().notNull(),
+  completedAt: timestamp("completed_at"),
+  duration: integer("duration"), // milliseconds
+  errorMessage: text("error_message"),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -220,6 +279,17 @@ export const insertPredictiveModelSchema = createInsertSchema(predictiveModels);
 
 export const insertPredictionSchema = createInsertSchema(predictions);
 
+export const insertWorkflowSchema = createInsertSchema(workflows).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertWorkflowExecutionSchema = createInsertSchema(workflowExecutions).omit({
+  id: true,
+  startedAt: true,
+});
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -242,3 +312,7 @@ export type PredictiveModel = typeof predictiveModels.$inferSelect;
 export type InsertPredictiveModel = z.infer<typeof insertPredictiveModelSchema>;
 export type Prediction = typeof predictions.$inferSelect;
 export type InsertPrediction = z.infer<typeof insertPredictionSchema>;
+export type Workflow = typeof workflows.$inferSelect;
+export type InsertWorkflow = z.infer<typeof insertWorkflowSchema>;
+export type WorkflowExecution = typeof workflowExecutions.$inferSelect;
+export type InsertWorkflowExecution = z.infer<typeof insertWorkflowExecutionSchema>;
