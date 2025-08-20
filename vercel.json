@@ -9,5 +9,11 @@
   ],
   "rewrites": [
     { "source": "/api/(.*)", "destination": "https://medflect-backend.onrender.com/api/$1" }
+<<<<<<< HEAD
+=======
+  ],
+  "routes": [
+    { "src": "/(.*)", "dest": "/$1" }
+>>>>>>> 7530966ca2dea385715138598e79d9f4d171bee0
   ]
 }
