@@ -32,7 +32,18 @@ MEDFLECT AI directly addresses the hospital data utilization challenge by provid
 - **Strategic Insights**: Long-term trend analysis for strategic hospital planning
 - **Performance Benchmarking**: Comparison with national averages and peer hospitals
 
-## Recent Changes (August 19, 2025)
+## Recent Changes (August 20, 2025)
+
+✓ **Comprehensive Workflow Builder**: Drag-and-drop visual workflow designer with 19+ medical workflow blocks
+✓ **GROQ AI Integration**: AI-powered workflow optimization suggestions and intelligent workflow recommendations
+✓ **Real-time Collaboration**: Multi-user workflow editing with offline-first IndexedDB caching
+✓ **Node Properties Editor**: Advanced configuration panel for workflow blocks with medical-specific settings
+✓ **Template Library**: Pre-built medical workflows (Emergency Department, Discharge Planning, Admission Flow)
+✓ **Workflow Testing & Deployment**: Live workflow testing with performance metrics and one-click deployment
+✓ **Complete Backend API**: Full CRUD operations for workflows with audit logging and AI suggestion endpoints
+✓ **Demo Integration**: Added workflow builder to live demo platform with interactive examples
+
+## Previous Updates (August 19, 2025)
 
 ✓ **Beautiful Landing Page**: Modern design showcasing MEDFLECT's capabilities for African healthcare
 ✓ **Live Demo Platform**: Interactive demonstration of data utilization solution with simulated hospital data

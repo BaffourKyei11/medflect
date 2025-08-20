@@ -235,7 +235,10 @@ export function WorkflowBuilder() {
 
     const workflowToSave = {
       ...workflow,
-      definition: { nodes, edges },
+      definition: { 
+        nodes: nodes as any, 
+        edges: edges as any 
+      },
     };
 
     if (isNewWorkflow) {
