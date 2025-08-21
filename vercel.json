@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "buildCommand": "cd client && npm install && npm run build",
+  "buildCommand": "cd shared && npm install && cd ../client && npm install && npm run build",
   "outputDirectory": "client/dist",
   "installCommand": "npm install",
-  "framework": null,
+  "framework": "vite",
   "routes": [
     { 
       "src": "/api/(.*)", 
