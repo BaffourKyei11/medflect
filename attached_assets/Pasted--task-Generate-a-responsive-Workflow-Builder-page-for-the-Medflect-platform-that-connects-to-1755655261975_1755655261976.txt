@@ -1,0 +1,78 @@
+{
+  "task": "Generate a responsive Workflow Builder page for the Medflect platform that connects to the backend and integrates GROQ AI.",
+  "requirements": {
+    "framework": "React + Vite + Tailwind (packages/web)",
+    "routing": "Add /workflow-builder route in React Router",
+    "design": {
+      "responsive": true,
+      "offlineFirst": true,
+      "components": [
+        "Sidebar with draggable workflow blocks",
+        "Canvas for building workflow pipelines",
+        "Top toolbar (Save, Test, Deploy, AI-Suggest buttons)",
+        "Right panel (Workflow properties, metrics, role-based permissions)"
+      ]
+    },
+    "features": {
+      "dragDropBuilder": "Enable admins to create workflows by dragging blocks like 'Admission', 'Triage', 'Discharge', 'Readmission Risk', 'Consent Check'.",
+      "AIIntegration": {
+        "engine": "GROQ",
+        "endpoint": "http://91.108.112.45:4000",
+        "virtualKey": "sk-npvlOAYvZsy6iRqqtM5PNA",
+        "model": "groq/deepseek-r1-distill-llama-70b",
+        "usage": [
+          "Suggest next workflow step",
+          "Explain optimization (reduce wait time, improve staff allocation)",
+          "Summarize workflow for admin approval"
+        ]
+      },
+      "backend": {
+        "apiBase": "${VITE_API_BASE}/api",
+        "endpoints": {
+          "listWorkflows": "GET /workflow",
+          "saveWorkflow": "POST /workflow",
+          "testWorkflow": "POST /workflow/test",
+          "deployWorkflow": "POST /workflow/deploy",
+          "aiSuggest": "POST /ai/summarize"
+        },
+        "dataModel": "FHIR resources (Patient, Encounter, Observation, Consent)"
+      },
+      "sync": {
+        "localDB": "IndexedDB via idb",
+        "syncStrategy": "background, conflict resolution via FHIR versioning"
+      }
+    },
+    "roles": {
+      "admin": "Create and deploy workflows",
+      "clinician": "View and trigger workflows at point of care",
+      "patient": "Interact with workflow outputs (SMS/app reminders, consent prompts)"
+    }
+  },
+  "exampleUI": {
+    "pageTitle": "Workflow Builder",
+    "sections": [
+      {
+        "name": "Toolbar",
+        "elements": ["Save", "Test", "Deploy", "AI Suggest"]
+      },
+      {
+        "name": "WorkflowCanvas",
+        "type": "drag-drop grid",
+        "blocks": ["Patient Admission", "Triage", "ICU Transfer", "Discharge Summary"]
+      },
+      {
+        "name": "RightPanel",
+        "elements": ["Properties Form", "Metrics", "Role Permissions"]
+      }
+    ]
+  },
+  "output": {
+    "deliverables": [
+      "src/pages/WorkflowBuilder.tsx with responsive UI",
+      "API service in src/services/workflow.ts",
+      "IndexedDB hooks in src/hooks/useWorkflowCache.ts",
+      "Updated router to include /workflow-builder",
+      "Unit tests for workflow saving and AI integration"
+    ]
+  }
+}
